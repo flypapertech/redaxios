@@ -20,7 +20,7 @@
  * @property {FormData|string|object} [body] a body, optionally encoded, to send
  * @property {'text'|'json'|'stream'|'blob'|'arrayBuffer'|'formData'|'stream'} [responseType="json"] An encoding to use for the response
  * @property {Record<string,any>|URLSearchParams} [params] querystring parameters
- * @property {(params: Options['params']) => string} [paramsSerializer] custom function to stringify querystring parameters
+ * @property {ParamsSerializer} [paramsSerializer] custom function to stringify querystring parameters
  * @property {boolean} [withCredentials] Send the request with credentials like cookies
  * @property {string} [auth] Authorization header value to send with the request
  * @property {string} [xsrfCookieName] Pass an Cross-site Request Forgery prevention cookie value as a header defined by `xsrfHeaderName`
@@ -30,6 +30,12 @@
  * @property {string} [baseURL] a base URL from which to resolve all URLs
  * @property {typeof window.fetch} [fetch] Custom window.fetch implementation
  * @property {any} [data]
+ */
+
+/**
+ * @public
+ * @typedef ParamsSerializer
+ * @property {(params: Options['params']) => string } [serializer]
  */
 
 /**
@@ -190,7 +196,9 @@ function create(defaults) {
 		if (options.params) {
 			url +=
 				(~url.indexOf('?') ? '&' : '?') +
-				(options.paramsSerializer ? options.paramsSerializer(options.params) : new URLSearchParams(options.params));
+				(options.paramsSerializer && options.paramsSerializer.serializer
+					? options.paramsSerializer.serializer(options.params)
+					: new URLSearchParams(options.params));
 		}
 
 		const fetchFunc = options.fetch || fetch;

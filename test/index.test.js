@@ -313,7 +313,9 @@ describe('redaxios', () => {
 
 		it('should accept a custom paramsSerializer function', async () => {
 			const params = { a: 1, b: true };
-			const paramsSerializer = (params) => 'e=iamthelaw';
+			const paramsSerializer = {
+				serializer: (params) => 'e=iamthelaw'
+			};
 			axios.get('/foo', { params, paramsSerializer });
 			expect(fetchMock).toHaveBeenCalledWith('/foo?e=iamthelaw', jasmine.any(Object));
 		});
